@@ -127,7 +127,7 @@ const thousandGenomes = () => h(Participant, {
 }, [
   buttonPrimary({
     as: 'a',
-    href: Nav.getLink('library-datasets-data-explorer', { dataset: '1000 Genomes' })
+    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'thousandGenomes' })
   }, ['Browse data'])
 ])
 
@@ -160,7 +160,7 @@ const amppd = () => h(Participant, {
 }, [
   buttonPrimary({
     as: 'a',
-    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'AMP PD - 2019_v1beta_0220' })
+    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'ampPd' })
   }, ['Browse Data'])
 ])
 
@@ -178,7 +178,7 @@ const baseline = () => h(Participant, {
 }, [
   buttonPrimary({
     as: 'a',
-    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'Baseline Health Study' })
+    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'baseline' })
   }, ['Browse Data'])
 ])
 
@@ -265,7 +265,7 @@ const nhs = () => h(Participant, {
 }, [
   buttonPrimary({
     as: 'a',
-    href: Nav.getLink('library-datasets-data-explorer', { dataset: `Nurses' Health Study` })
+    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'nhs' })
   }, ['Browse Data'])
 ])
 
@@ -293,7 +293,7 @@ const ukb = () => h(Participant, {
 }, [
   buttonPrimary({
     as: 'a',
-    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'UK Biobank' })
+    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'ukbb' })
   }, ['Browse Data'])
 ])
 
