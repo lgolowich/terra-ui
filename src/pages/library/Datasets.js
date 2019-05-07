@@ -1,6 +1,9 @@
+import _ from 'lodash/fp'
+import { ajaxCaller } from 'src/libs/ajax'
+import { authStore } from 'src/libs/auth'
+import datasets from 'src/libs/datasets'
 import { Fragment } from 'react'
 import { b, div, h, img, p, span } from 'react-hyperscript-helpers'
-import { pure } from 'recompose'
 import { buttonPrimary, link } from 'src/components/common'
 import { libraryTopMatter } from 'src/components/library-common'
 import Modal from 'src/components/Modal'
@@ -20,6 +23,7 @@ import colors from 'src/libs/colors'
 import { getConfig, isFirecloud } from 'src/libs/config'
 import * as Nav from 'src/libs/nav'
 import * as Style from 'src/libs/style'
+import * as Utils from 'src/libs/utils'
 import { Component } from 'src/libs/wrapped-components'
 
 
@@ -256,13 +260,19 @@ const nemo = () => h(Participant, {
   }, ['Browse Data'])
 ])
 
-const nhs = () => h(Participant, {
+const nhs = (authDomain, groups) => h(Participant, {
   logo: { src: nhsLogo, alt: `Nurses' Health Study logo` },
   title: `Nurses' Health Study`,
   description: `The Nurses' Health Study and Nurses' Health Study II are among the largest investigations into the risk
   factors for major chronic diseases in women.`,
   sizeText: 'Participants: > 120,000'
 }, [
+  groups.indexOf(authDomain) === -1 && buttonPrimary({
+    style: { marginRight: '1rem' },
+    as: 'a',
+    href: datasets.nhs.applyForAccess,
+    target: '_blank'
+  }, ['Apply for access']),
   buttonPrimary({
     as: 'a',
     href: Nav.getLink('library-datasets-data-explorer', { dataset: 'nhs' })
@@ -298,14 +308,43 @@ const ukb = () => h(Participant, {
 ])
 
 
-const Datasets = pure(() => {
-  return h(Fragment, [
-    libraryTopMatter('datasets'),
-    div({ style: styles.content }, [
-      // Put datasets in alphabetical order
-      thousandGenomes(), amppd(), baseline(), encode(), fcDataLib(), gtex(), hca(), nemo(), nhs(), topMed(), ukb()
+const Datasets = _.flow(
+  ajaxCaller,
+  Utils.connectAtom(authStore, 'authState')
+)(class Datasets extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { groups: [] }
+  }
+
+  async componentDidMount() {
+    const { ajax: { Groups } } = this.props
+    const groups = _.map(g => g.groupName, await Groups.list())
+    this.setState({ groups: groups })
+  }
+
+  async componentDidUpdate(prevProps) {
+    const { ajax: { Groups }, authState: { profile: { email } } } = this.props
+    const { groups } = this.state
+    if (email === undefined && groups.length) {
+      this.setState({ groups: [] })
+    } else if (email !== prevProps.authState.profile.email) {
+      const groups = _.map(g => g.groupName, await Groups.list())
+      this.setState({ groups: groups })
+    }
+  }
+
+  render() {
+    const { groups } = this.state
+
+    return h(Fragment, [
+      libraryTopMatter('datasets'),
+      div({ style: styles.content }, [
+        // Put datasets in alphabetical order
+        thousandGenomes(), amppd(), baseline(), encode(), fcDataLib(), gtex(), hca(), nemo(), nhs(datasets.nhs.authDomain, groups), topMed(), ukb()
+      ])
     ])
-  ])
+  }
 })
 
 

@@ -1,6 +1,6 @@
 // If dataset has Data Explorer:
 // - name must be name from dataset.json
-// - ad must be authorization_domain from dataset.json
+// - authDomain must be authorization_domain from dataset.json
 export default {
   thousandGenomes: {
     name: '1000 Genomes',
@@ -16,6 +16,8 @@ export default {
   },
   nhs: {
     name: 'Nurses\' Health Study',
+    authDomain: 'nhs_saturn_users',
+    applyForAccess: 'https://www.nurseshealthstudy.org/researchers',
     dataExplorer: 'https://nhs-explorer.appspot.com/?embed'
   },
   ukbb: {
