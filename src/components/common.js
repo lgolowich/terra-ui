@@ -177,10 +177,8 @@ export const LabeledCheckbox = ({ checked, onChange, disabled, children, ...prop
   ])
 }
 
-export const RadioButton = ({ text, labelStyle, ...props }) => {
-  const id = `${text}-radio-button`
-
-  return h(Fragment, [
+export const RadioButton = ({ text, labelStyle, ...props }) => h(IdContainer, [
+  id => h(Fragment, [
     input({
       type: 'radio', id,
       name: id, // not semantically correct, but fixes a focus cycle issue
@@ -188,7 +186,7 @@ export const RadioButton = ({ text, labelStyle, ...props }) => {
     }),
     label({ htmlFor: id, style: labelStyle }, text)
   ])
-}
+])
 
 export const spinnerDefault = ({ outerStyles = {}, innerStyles = {} }) => div(
   {

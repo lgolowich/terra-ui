@@ -1,6 +1,7 @@
+import _ from 'lodash/fp'
 import { Fragment, useState } from 'react'
-import { h, span } from 'react-hyperscript-helpers'
-import { IdContainer, LabeledCheckbox } from 'src/components/common'
+import { div, h, span } from 'react-hyperscript-helpers'
+import { IdContainer, LabeledCheckbox, RadioButton } from 'src/components/common'
 import { IntegerInput, TextInput } from 'src/components/input'
 import Modal from 'src/components/Modal'
 import { FormLabel } from 'src/libs/forms'
@@ -45,6 +46,15 @@ const CatalogDatasetModal = ({ onDismiss, workspace }) => {
     ])
   ])
 
+  const makeRadioInput = (inputLabel, value, options, onChange) => div([
+    h(FormLabel, [inputLabel]),
+    h(Fragment, _.map(({ optLabel, optValue }) => div([h(RadioButton, {
+      onChange: () => onChange(optValue),
+      checked: value === optValue,
+      text: optLabel
+    })]), options))
+  ])
+
   return h(Modal, {
     onDismiss,
     title: 'Catalog Dataset'
@@ -65,7 +75,11 @@ const CatalogDatasetModal = ({ onDismiss, workspace }) => {
     makeTextInput('Data Use Limitation', dataUseRestriction, setDataUseRestriction),
     makeTextInput('Study Design', studyDesign, setStudyDesign),
     makeBooleanInput('Requires External Approval', requiresExternalApproval, setRequiresExternalApproval),
-    makeTextInput('Choose one of the available options to define Data Use Limitations', useLimitationOption, setUseLimitationOption)
+    makeRadioInput('Choose one of the available options to define Data Use Limitations', useLimitationOption, [
+      { optValue: 'questionnaire', optLabel: 'Set Data Use Limitations by answering a questionnaire' },
+      { optValue: 'orsp', optLabel: 'Retrieve Data Use Limitations from Broad ORSP' },
+      { optValue: 'skip', optLabel: 'I would like to skip this step' }
+    ], setUseLimitationOption)
 
   ])
 }
