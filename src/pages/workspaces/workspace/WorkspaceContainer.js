@@ -15,6 +15,7 @@ import * as Nav from 'src/libs/nav'
 import * as Style from 'src/libs/style'
 import * as Utils from 'src/libs/utils'
 import { Component } from 'src/libs/wrapped-components'
+import CatalogDatasetModal from 'src/pages/workspaces/workspace/CatalogDatasetModal'
 import DeleteWorkspaceModal from 'src/pages/workspaces/workspace/DeleteWorkspaceModal'
 import ShareWorkspaceModal from 'src/pages/workspaces/workspace/ShareWorkspaceModal'
 
@@ -30,7 +31,7 @@ const TAB_NAMES = ['dashboard', 'data', 'notebooks', 'tools', 'job history']
 
 class WorkspaceTabs extends PureComponent {
   render() {
-    const { namespace, name, workspace, activeTab, refresh, onShare, onDelete, onClone } = this.props
+    const { namespace, name, workspace, activeTab, refresh, onShare, onDelete, onClone, onCatalog } = this.props
     const isOwner = workspace && Utils.isOwner(workspace.accessLevel)
     const canShare = workspace && workspace.canShare
 
@@ -49,6 +50,9 @@ class WorkspaceTabs extends PureComponent {
             tooltipSide: 'left',
             onClick: () => onShare()
           }, [menuIcon('share'), 'Share']),
+          h(MenuButton, {
+            onClick: () => onCatalog()
+          }, [menuIcon('data-cluster'), 'Catalog Dataset']),
           h(MenuButton, { disabled: true }, [menuIcon('export'), 'Publish', comingSoon]),
           h(MenuButton, {
             disabled: !isOwner,
@@ -87,9 +91,13 @@ class WorkspaceContainer extends Component {
     this.setState({ sharingWorkspace: true })
   }
 
+  onCatalog = () => {
+    this.setState({ catalogingWorkspace: true })
+  }
+
   render() {
     const { namespace, name, breadcrumbs, topBarContent, title, activeTab, showTabBar = true, refresh, refreshClusters, workspace, clusters } = this.props
-    const { deletingWorkspace, cloningWorkspace, sharingWorkspace } = this.state
+    const { deletingWorkspace, cloningWorkspace, sharingWorkspace, catalogingWorkspace } = this.state
     return h(Fragment, [
       h(TopBar, { title: 'Workspaces', href: Nav.getLink('workspaces') }, [
         div({ style: Style.breadcrumb.breadcrumb }, [
@@ -107,7 +115,7 @@ class WorkspaceContainer extends Component {
       ]),
       showTabBar && h(WorkspaceTabs, {
         namespace, name, activeTab, refresh, workspace,
-        onDelete: this.onDelete, onClone: this.onClone, onShare: this.onShare
+        onDelete: this.onDelete, onClone: this.onClone, onShare: this.onShare, onCatalog: this.onCatalog
       }),
       div({ style: Style.elements.pageContentContainer }, [
         this.props.children
@@ -125,6 +133,10 @@ class WorkspaceContainer extends Component {
       sharingWorkspace && h(ShareWorkspaceModal, {
         workspace,
         onDismiss: () => this.setState({ sharingWorkspace: false })
+      }),
+      catalogingWorkspace && h(CatalogDatasetModal, {
+        workspace,
+        onDismiss: () => this.setState({ catalogingWorkspace: false })
       })
     ])
   }
