@@ -1,3 +1,4 @@
+import _ from 'lodash/fp'
 import { commonPaths } from 'src/components/breadcrumbs'
 import datasets from 'src/libs/datasets'
 import { Fragment } from 'react'
@@ -9,17 +10,18 @@ import * as Style from 'src/libs/style'
 
 
 const DataExplorer = props => {
+  const index = _.findIndex({ name: props.dataset }, datasets)
   return h(Fragment, [
     h(TopBar, { title: 'Library', href: Nav.getLink('library-datasets') }, [
       div({ style: Style.breadcrumb.breadcrumb }, [
         div({}, commonPaths.datasetList()),
         div({ style: Style.breadcrumb.textUnderBreadcrumb }, [
-          'Data Explorer - ' + datasets[props.dataset].name
+          'Data Explorer - ' + datasets[index].name
         ])
       ])
     ]),
     h(IframeResizer, {
-      src: datasets[props.dataset].dataExplorer + '&' + Nav.history.location.search.slice(1),
+      src: datasets[index].dataExplorer + '&' + Nav.history.location.search.slice(1),
       iframeResizerOptions: {
         onMessage: ({ iframe, message }) => {
           if (message.importDataQueryStr) {

@@ -131,7 +131,7 @@ const thousandGenomes = () => h(Participant, {
 }, [
   buttonPrimary({
     as: 'a',
-    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'thousandGenomes' })
+    href: Nav.getLink('library-datasets-data-explorer', { dataset: '1000 Genomes' })
   }, ['Browse data'])
 ])
 
@@ -164,7 +164,8 @@ const amppd = () => h(Participant, {
 }, [
   buttonPrimary({
     as: 'a',
-    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'ampPd' })
+    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'AMP PD - 2019_v1beta_0220' })
+    //href: 'https://amp-pd-data-explorer.appspot.com/_gcp_iap/clear_login_cookie',
   }, ['Browse Data'])
 ])
 
@@ -182,7 +183,7 @@ const baseline = () => h(Participant, {
 }, [
   buttonPrimary({
     as: 'a',
-    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'baseline' })
+    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'Baseline Health Study' })
   }, ['Browse Data'])
 ])
 
@@ -260,24 +261,27 @@ const nemo = () => h(Participant, {
   }, ['Browse Data'])
 ])
 
-const nhs = (authDomain, groups) => h(Participant, {
-  logo: { src: nhsLogo, alt: `Nurses' Health Study logo` },
-  title: `Nurses' Health Study`,
-  description: `The Nurses' Health Study and Nurses' Health Study II are among the largest investigations into the risk
-  factors for major chronic diseases in women.`,
-  sizeText: 'Participants: > 120,000'
-}, [
-  groups.indexOf(authDomain) === -1 && buttonPrimary({
-    style: { marginRight: '1rem' },
-    as: 'a',
-    href: datasets.nhs.applyForAccess,
-    target: '_blank'
-  }, ['Apply for access']),
-  buttonPrimary({
-    as: 'a',
-    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'nhs' })
-  }, ['Browse Data'])
-])
+const nhs = groups => {
+  const index = _.findIndex({ name: 'Nurses\' Health Study' }, datasets)
+  return h(Participant, {
+    logo: { src: nhsLogo, alt: `Nurses' Health Study logo` },
+    title: `Nurses' Health Study`,
+    description: `The Nurses' Health Study and Nurses' Health Study II are among the largest investigations into the risk
+    factors for major chronic diseases in women.`,
+    sizeText: 'Participants: > 120,000'
+  }, [
+    groups.indexOf(datasets[index].authDomain) === -1 && buttonPrimary({
+      style: { marginRight: '1rem' },
+      as: 'a',
+      href: datasets[index].applyForAccess,
+      target: '_blank'
+    }, ['Apply for access']),
+    buttonPrimary({
+      as: 'a',
+      href: Nav.getLink('library-datasets-data-explorer', { dataset: 'Nurses\' Health Study' })
+    }, ['Browse Data'])
+  ])
+}
 
 const topMed = () => h(Participant, {
   logo: { src: topMedLogo, alt: 'TopMed logo' },
@@ -341,7 +345,7 @@ const Datasets = _.flow(
       libraryTopMatter('datasets'),
       div({ style: styles.content }, [
         // Put datasets in alphabetical order
-        thousandGenomes(), amppd(), baseline(), encode(), fcDataLib(), gtex(), hca(), nemo(), nhs(datasets.nhs.authDomain, groups), topMed(), ukb()
+        thousandGenomes(), amppd(), baseline(), encode(), fcDataLib(), gtex(), hca(), nemo(), nhs(groups), topMed(), ukb()
       ])
     ])
   }
