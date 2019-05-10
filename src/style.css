@@ -104,6 +104,9 @@ a {
   color: #74ae43;
 }
 
+.CodeMirror, .CodeMirror-scroll {
+  min-height: 4em;
+}
 .markdown-body a:hover, .simplemde-container .editor-preview a:hover {
   color: #89bb60;
 }

@@ -5,6 +5,7 @@ import { IdContainer, LabeledCheckbox, RadioButton } from 'src/components/common
 import { IntegerInput, TextInput } from 'src/components/input'
 import Modal from 'src/components/Modal'
 import { FormLabel } from 'src/libs/forms'
+import SimpleMDE from 'react-simplemde-editor'
 
 
 const CatalogDatasetModal = ({ onDismiss, workspace }) => {
@@ -67,7 +68,8 @@ const CatalogDatasetModal = ({ onDismiss, workspace }) => {
 
   return h(Modal, {
     onDismiss,
-    title: 'Catalog Dataset'
+    title: 'Catalog Dataset',
+    width: '40rem'
   }, [
     makeTextInput('Cohort Name', datasetName, setDatasetName, true),
     makeTextInput('Dataset Version', datasetVersion, setDatasetVersion, true),
@@ -94,7 +96,13 @@ const CatalogDatasetModal = ({ onDismiss, workspace }) => {
     makeTextInput('Reported Ethnicity', ethnicity, setEthnicity),
     makeTextInput('Cohort Country of Origin', cohortCountry, setCohortCountry),
     makeBooleanInput('Requires External Approval', requiresExternalApproval, setRequiresExternalApproval),
-    makeTextInput('Data Access Instructions', dataAccessInstructions, setDataAccessInstructions),
+    h(FormLabel, ['Data Access Instructions']),
+    h(SimpleMDE, {
+      options: { renderingConfig: { singleLineBreaks: false } },
+      value: dataAccessInstructions,
+      className: 'simplemde-container',
+      onChange: setDataAccessInstructions
+    }),
     makeRadioInput('Choose one of the available options to define Data Use Limitations', useLimitationOption, [
       { optValue: 'questionnaire', optLabel: 'Set Data Use Limitations by answering a questionnaire' },
       { optValue: 'orsp', optLabel: 'Retrieve Data Use Limitations from Broad ORSP' },
