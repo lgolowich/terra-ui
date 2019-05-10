@@ -107,6 +107,7 @@ const CatalogDatasetModal = ({ onDismiss, workspace }) => {
       onChange: setDataAccessInstructions
     }),
     makeRadioInput('Choose one of the available options to define Data Use Limitations', useLimitationOption, [
+      { optValue: '', optLabel: 'Not specified' },
       { optValue: 'questionnaire', optLabel: 'Set Data Use Limitations by answering a questionnaire' },
       { optValue: 'orsp', optLabel: 'Retrieve Data Use Limitations from Broad ORSP' },
       { optValue: 'skip', optLabel: 'I would like to skip this step' }
