@@ -17,7 +17,8 @@ import * as ImportData from 'src/pages/ImportData'
 import * as ImportTool from 'src/pages/ImportTool'
 import * as LandingPage from 'src/pages/LandingPage'
 import * as Code from 'src/pages/library/Code'
-import * as DataExplorer from 'src/pages/library/DataExplorer'
+import * as DataExplorerLibrary from 'src/pages/library/DataExplorer'
+import * as DataExplorerWorkspace from 'src/pages/workspaces/workspace/DataExplorer'
 import * as Datasets from 'src/pages/library/Datasets'
 import * as Showcase from 'src/pages/library/Showcase'
 import * as PrivacyPolicy from 'src/pages/PrivacyPolicy'
@@ -63,7 +64,8 @@ const initNavPaths = () => {
     TerminalLauncher.navPaths,
     TermsOfService.navPaths,
     Code.navPaths,
-    DataExplorer.navPaths,
+    DataExplorerLibrary.navPaths,
+    DataExplorerWorkspace.navPaths,
     Datasets.navPaths,
     Showcase.navPaths,
     Projects.navPaths
