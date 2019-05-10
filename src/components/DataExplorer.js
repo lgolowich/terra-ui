@@ -5,7 +5,7 @@ import * as Nav from 'src/libs/nav'
 
 
 const datasetToUrl = {
-  // key must be dataset name from Data Explorer dataset.json
+  // Key must be dataset name from Data Explorer dataset.json
   '1000 Genomes': 'https://test-data-explorer.appspot.com/?embed'
 }
 

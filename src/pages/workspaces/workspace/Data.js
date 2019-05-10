@@ -11,6 +11,7 @@ import { buttonPrimary, linkButton, Select, spinnerOverlay } from 'src/component
 import DataTable from 'src/components/DataTable'
 import ExportDataModal from 'src/components/ExportDataModal'
 import FloatingActionButton from 'src/components/FloatingActionButton'
+import * as Nav from 'src/libs/nav'
 import { icon, spinner } from 'src/components/icons'
 import { DelayedSearchInput, TextInput } from 'src/components/input'
 import Modal from 'src/components/Modal'
@@ -419,7 +420,7 @@ class EntitiesContent extends Component {
   }
 
   renderOpenInDataExplorerButton() {
-    const { workspace: { workspace: { workspaceId } } } = this.props
+    const { workspace: { workspace: { name, namespace, workspaceId } } } = this.props
     const { selectedEntities } = this.state
 
     return h(Fragment, [
@@ -428,7 +429,18 @@ class EntitiesContent extends Component {
         tooltip: _.size(selectedEntities) === 0 ? 'Select a cohort to open in Data Explorer' :
           _.size(selectedEntities) > 1 ? 'Select exactly one cohort to open in Data Explorer' :
             '',
-        onClick: () => window.open(_.values(selectedEntities)[0].attributes.data_explorer_url + '&wid=' + workspaceId)
+        onClick: () => {
+          const attributes = _.values(selectedEntities)[0].attributes
+          const url = attributes.data_explorer_url +  '&wid=' + workspaceId
+          Nav.history.push({
+            pathname: Nav.getPath('workspace-data-explorer', {
+              dataset: attributes.dataset_name,
+              name: name,
+              namespace: namespace
+            }),
+            search: url.substring(url.indexOf('?'))
+          })
+        }
       }, [
         icon('search', { style: { marginRight: '0.5rem' } }),
         'Open in Data Explorer'
@@ -471,7 +483,7 @@ class EntitiesContent extends Component {
         },
         childrenBefore: ({ entities, columnSettings }) => div({
           style: { display: 'flex', alignItems: 'center', flex: 'none' }
-        }, entityKey === 'cohort' && entityMetadata.cohort.attributeNames.includes('data_explorer_url') ? [
+        }, entityKey === 'cohort' && entityMetadata.cohort.attributeNames.includes('data_explorer_url') && entityMetadata.cohort.attributeNames.includes('dataset_name')? [
           this.renderOpenInDataExplorerButton()
         ] : [
           this.renderDownloadButton(columnSettings),
