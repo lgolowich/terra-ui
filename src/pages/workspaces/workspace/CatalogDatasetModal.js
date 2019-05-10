@@ -97,6 +97,9 @@ const CatalogDatasetModal = ({ onDismiss, workspace }) => {
     makeTextInput('Cohort Country of Origin', cohortCountry, setCohortCountry),
     makeBooleanInput('Requires External Approval', requiresExternalApproval, setRequiresExternalApproval),
     h(FormLabel, ['Data Access Instructions']),
+    div({ style: { fontSize: 'smaller' } }, [
+      'Users will see this message when attempting to access a workspace they are unauthorized to enter. Leave blank for a default message with the Contact Email above.'
+    ]),
     h(SimpleMDE, {
       options: { renderingConfig: { singleLineBreaks: false } },
       value: dataAccessInstructions,
