@@ -26,7 +26,7 @@ const CatalogDatasetModal = ({ onDismiss, workspace }) => {
   const [requiresExternalApproval, setRequiresExternalApproval] = useState(false)
   const [useLimitationOption, setUseLimitationOption] = useState('')
 
-  const makeTextInput = (inputLabel, value, onChange) => h(IdContainer, [
+  const makeTextInput = (inputLabel, value, onChange, isRequired = false) => h(IdContainer, [
     id => h(Fragment, [
       h(FormLabel, { htmlFor: id }, [inputLabel]),
       h(TextInput, { value, onChange })
@@ -62,19 +62,29 @@ const CatalogDatasetModal = ({ onDismiss, workspace }) => {
     makeTextInput('Cohort Name', datasetName, setDatasetName),
     makeTextInput('Dataset Version', datasetVersion, setDatasetVersion),
     makeTextInput('Cohort Description', datasetDescription, setDatasetDescription),
+    makeTextInput('Dataset Owner', datasetOwner, setDatasetOwner),
     makeTextInput('Dataset Custodian', datasetCustodian, setDatasetCustodian),
     makeTextInput('Dataset Depositor', datasetDepositor, setDatsetDespositor),
     makeTextInput('Contact Email', contactEmail, setContactEmail),
-    makeTextInput('Dataset Owner', datasetOwner, setDatasetOwner),
     makeTextInput('Research Institute', institute, setInstitute),
     makeTextInput('Cohort Phenotype/Indication', indication, setIndication),
+    // Primary Disease Site
     makeIntInput('No. of Subjects', 0, numSubjects, setNumSubjects),
     makeTextInput('Project Name', projectName, setProjectName),
     makeTextInput('Data Category', dataCategory, setDataCategory),
     makeTextInput('Experimental Strategy', dataType, setDataType),
+    //Genome Reference Version
+    // Data File Formats
+    // Profiling instrument type
+    // Profiling Protocol
+    /// Depth of Sequencing Coverage (Average)
     makeTextInput('Data Use Limitation', dataUseRestriction, setDataUseRestriction),
     makeTextInput('Study Design', studyDesign, setStudyDesign),
+    // cell type
+    // Reported Ethnicity
+    // Cohort Country of Origin
     makeBooleanInput('Requires External Approval', requiresExternalApproval, setRequiresExternalApproval),
+    // Data Access Instructions
     makeRadioInput('Choose one of the available options to define Data Use Limitations', useLimitationOption, [
       { optValue: 'questionnaire', optLabel: 'Set Data Use Limitations by answering a questionnaire' },
       { optValue: 'orsp', optLabel: 'Retrieve Data Use Limitations from Broad ORSP' },

@@ -15,13 +15,13 @@ const styles = {
 }
 
 
-export const FormLabel = ({ style = {}, children, ...props }) => {
-  return label({ ...props, style: { ...styles.formLabel, ...style } }, [children])
+export const FormLabel = ({ style = {}, isRequired = false, children, ...props }) => {
+  return label({ ...props, style: { ...styles.formLabel, ...style } }, [children, isRequired && ' *'])
 }
 
 
-export const RequiredFormLabel = ({ style = {}, children, ...props }) => {
-  return label({ ...props, style: { ...styles.formLabel, ...style } }, [children, ' *'])
+export const RequiredFormLabel = props => {
+  return FormLabel({ ...props, isRequired: true })
 }
 
 
