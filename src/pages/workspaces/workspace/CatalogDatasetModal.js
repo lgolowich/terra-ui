@@ -28,7 +28,7 @@ const CatalogDatasetModal = ({ onDismiss, workspace }) => {
 
   const makeTextInput = (inputLabel, value, onChange, isRequired = false) => h(IdContainer, [
     id => h(Fragment, [
-      h(FormLabel, { htmlFor: id }, [inputLabel]),
+      h(FormLabel, { htmlFor: id, isRequired }, [inputLabel]),
       h(TextInput, { value, onChange })
     ])
   ])
@@ -59,15 +59,15 @@ const CatalogDatasetModal = ({ onDismiss, workspace }) => {
     onDismiss,
     title: 'Catalog Dataset'
   }, [
-    makeTextInput('Cohort Name', datasetName, setDatasetName),
-    makeTextInput('Dataset Version', datasetVersion, setDatasetVersion),
-    makeTextInput('Cohort Description', datasetDescription, setDatasetDescription),
-    makeTextInput('Dataset Owner', datasetOwner, setDatasetOwner),
-    makeTextInput('Dataset Custodian', datasetCustodian, setDatasetCustodian),
-    makeTextInput('Dataset Depositor', datasetDepositor, setDatsetDespositor),
-    makeTextInput('Contact Email', contactEmail, setContactEmail),
-    makeTextInput('Research Institute', institute, setInstitute),
-    makeTextInput('Cohort Phenotype/Indication', indication, setIndication),
+    makeTextInput('Cohort Name', datasetName, setDatasetName, true),
+    makeTextInput('Dataset Version', datasetVersion, setDatasetVersion, true),
+    makeTextInput('Cohort Description', datasetDescription, setDatasetDescription, true),
+    makeTextInput('Dataset Owner', datasetOwner, setDatasetOwner, true),
+    makeTextInput('Dataset Custodian', datasetCustodian, setDatasetCustodian, true),
+    makeTextInput('Dataset Depositor', datasetDepositor, setDatsetDespositor, true),
+    makeTextInput('Contact Email', contactEmail, setContactEmail, true),
+    makeTextInput('Research Institute', institute, setInstitute, true),
+    makeTextInput('Cohort Phenotype/Indication', indication, setIndication, true),
     // Primary Disease Site
     makeIntInput('No. of Subjects', 0, numSubjects, setNumSubjects),
     makeTextInput('Project Name', projectName, setProjectName),
