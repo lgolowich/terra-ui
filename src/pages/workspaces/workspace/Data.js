@@ -7,13 +7,14 @@ import Dropzone from 'react-dropzone'
 import { div, form, h, input } from 'react-hyperscript-helpers'
 import { AutoSizer } from 'react-virtualized'
 import * as breadcrumbs from 'src/components/breadcrumbs'
-import { buttonPrimary, linkButton, Select, spinnerOverlay } from 'src/components/common'
+import { buttonPrimary, Clickable, linkButton, MenuButton, Select, spinnerOverlay } from 'src/components/common'
 import DataTable from 'src/components/DataTable'
 import ExportDataModal from 'src/components/ExportDataModal'
 import FloatingActionButton from 'src/components/FloatingActionButton'
 import { icon, spinner } from 'src/components/icons'
 import { DelayedSearchInput, TextInput } from 'src/components/input'
 import Modal from 'src/components/Modal'
+import PopupTrigger from 'src/components/PopupTrigger'
 import { FlexTable, HeaderCell, SimpleTable, TextCell } from 'src/components/table'
 import UriViewer from 'src/components/UriViewer'
 import { ajaxCaller } from 'src/libs/ajax'
@@ -25,6 +26,7 @@ import { withErrorReporting } from 'src/libs/error'
 import * as StateHistory from 'src/libs/state-history'
 import * as Utils from 'src/libs/utils'
 import { Component } from 'src/libs/wrapped-components'
+import { Tools } from 'src/pages/workspaces/workspace/Tools'
 import { wrapWorkspace } from 'src/pages/workspaces/workspace/WorkspaceContainer'
 import { IGVFileSelector } from 'src/components/IGVFileSelector'
 import { IGVBrowser } from 'src/components/IGVBrowser'
@@ -341,7 +343,8 @@ class EntitiesContent extends Component {
       deletingEntities: false,
       refreshKey: 0,
       igvFiles: undefined,
-      showIgvSelector: false
+      showIgvSelector: false,
+      selectingWorkflow: false
     }
     this.downloadForm = createRef()
   }
@@ -456,7 +459,7 @@ class EntitiesContent extends Component {
       workspace, workspace: { workspace: { namespace, name }, workspaceSubmissionStats: { runningSubmissionsCount } },
       entityKey, entityMetadata, loadMetadata, firstRender
     } = this.props
-    const { selectedEntities, deletingEntities, copyingEntities, refreshKey, igvFiles, showIgvSelector } = this.state
+    const { selectedEntities, deletingEntities, copyingEntities, refreshKey, igvFiles, showIgvSelector, selectingWorkflow } = this.state
 
     const { initialX, initialY } = firstRender ? StateHistory.get() : {}
     return igvFiles ? h(IGVBrowser, { selectedFiles: igvFiles, refGenome: 'hg19', namespace }) : h(Fragment, [
@@ -476,7 +479,20 @@ class EntitiesContent extends Component {
         ] : [
           this.renderDownloadButton(columnSettings),
           this.renderCopyButton(entities, columnSettings),
-          this.renderIgvButton()
+          // this.renderIgvButton(),
+          h(PopupTrigger, {
+            side: 'bottom',
+            closeOnClick: true,
+            disabled: _.isEmpty(selectedEntities),
+            content: h(Fragment, [
+              h(MenuButton, { onClick: () => this.setState({ selectingWorkflow: true }) }, ['Workflow']),
+              h(MenuButton, {}, ['IGV'])
+            ])
+          }, [h(Clickable, [
+            buttonPrimary({
+              disabled: _.isEmpty(selectedEntities)
+            }, ['Open with...'])
+          ])])
         ])
       }),
       !_.isEmpty(selectedEntities) && h(FloatingActionButton, {
@@ -511,7 +527,13 @@ class EntitiesContent extends Component {
         onDismiss: () => this.setState({ showIgvSelector: false }),
         onSuccess: selectedFiles => this.setState({ showIgvSelector: false, igvFiles: selectedFiles }),
         selectedEntities
-      })
+      }),
+      selectingWorkflow && h(Modal, {
+        title: 'Choose Workflow',
+        onDismiss: () => this.setState({ selectingWorkflow: false })
+      }, [
+        h(Tools, { namespace, name })
+      ])
     ])
   }
 }
