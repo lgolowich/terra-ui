@@ -1,21 +1,11 @@
 import { commonPaths } from 'src/components/breadcrumbs'
+import dataExplorerOrigins from 'src/libs/datasets'
 import { Fragment } from 'react'
 import { div, h } from 'react-hyperscript-helpers'
 import IframeResizer from 'react-iframe-resizer-super'
 import TopBar from 'src/components/TopBar'
 import * as Nav from 'src/libs/nav'
 import * as Style from 'src/libs/style'
-
-
-const datasetToUrl = {
-  // key must be dataset name from Data Explorer dataset.json
-  '1000 Genomes': 'https://test-data-explorer.appspot.com/?embed',
-  'AMP PD - 2019_v1beta_0220': 'https://amp-pd-data-explorer.appspot.com/?embed',
-  'Baseline Health Study': 'https://baseline-baseline-explorer.appspot.com/?embed',
-  'Nurses\' Health Study': 'https://nhs-explorer.appspot.com/?embed',
-  'UK Biobank': 'https://biobank-explorer.appspot.com/?embed'
-}
-
 
 const DataExplorer = props => {
   return h(Fragment, [
@@ -28,7 +18,7 @@ const DataExplorer = props => {
       ])
     ]),
     h(IframeResizer, {
-      src: datasetToUrl[props.dataset] + '&' + Nav.history.location.search.slice(1),
+      src: dataExplorerOrigins[props.dataset] + '/?embed&' + Nav.history.location.search.slice(1),
       iframeResizerOptions: {
         onMessage: ({ iframe, message }) => {
           if (message.importDataQueryStr) {
