@@ -430,17 +430,16 @@ class EntitiesContent extends Component {
           _.size(selectedEntities) > 1 ? 'Select exactly one cohort to open in Data Explorer' :
             '',
         onClick: () => {
-          const attributes = _.values(selectedEntities)[0].attributes
-          const url = attributes.data_explorer_url +  '&wid=' + workspaceId
+          const attr = _.values(selectedEntities)[0].attributes
+          const url = attr.data_explorer_url + '&wid=' + workspaceId
           Nav.history.push({
             pathname: Nav.getPath('workspace-data-explorer', {
-              dataset: attributes.dataset_name,
+              dataset: attr.dataset_name,
               name: name,
               namespace: namespace
             }),
             search: url.substring(url.indexOf('?'))
-          })
-        }
+        })}
       }, [
         icon('search', { style: { marginRight: '0.5rem' } }),
         'Open in Data Explorer'

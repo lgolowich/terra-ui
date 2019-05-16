@@ -2,6 +2,7 @@ import { Fragment } from 'react'
 import { b, div, h, img, p, span } from 'react-hyperscript-helpers'
 import { pure } from 'recompose'
 import { buttonPrimary, link } from 'src/components/common'
+import { datasetOrigins } from 'src/components/DataExplorer'
 import { libraryTopMatter } from 'src/components/library-common'
 import Modal from 'src/components/Modal'
 import TooltipTrigger from 'src/components/TooltipTrigger'
@@ -127,7 +128,7 @@ const thousandGenomes = () => h(Participant, {
 }, [
   buttonPrimary({
     as: 'a',
-    href: Nav.getLink('library-datasets-data-explorer', { dataset: '1000 Genomes' }),
+    href: Nav.getLink('library-datasets-data-explorer', { dataset: '1000 Genomes' }) + '?origin=' + datasetOrigins['1000 Genomes'],
     tooltip: browseTooltip
   }, ['Browse data'])
 ])
