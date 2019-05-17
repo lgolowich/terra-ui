@@ -8,6 +8,7 @@ import TooltipTrigger from 'src/components/TooltipTrigger'
 import amppdLogo from 'src/images/library/datasets/Amp@2x.png'
 import baselineLogo from 'src/images/library/datasets/baseline.jpg'
 import broadLogo from 'src/images/library/datasets/broad_logo.png'
+import dataExplorerOrigins from 'src/libs/datasets'
 import encodeLogo from 'src/images/library/datasets/ENCODE@2x.png'
 import gtexLogo from 'src/images/library/datasets/GTeX@2x.png'
 import hcaLogo from 'src/images/library/datasets/HCA@2x.png'
@@ -114,6 +115,46 @@ const NIHCommonsButtons = () => buttonPrimary({
   tooltip: browseTooltip
 }, ['Browse STAGE Repository'])
 
+// For Terra Data Explorers with Identity-Aware Proxy enabled
+class PrivateDataExplorerButton extends Component {
+  constructor(props) {
+    super(props)
+    const { dataset } = this.props
+    this.origin = dataExplorerOrigins[dataset]
+    this.iapSessionRefreshWindow = null
+  }
+
+  checkSessionRefresh = () => {
+    if (this.iapSessionRefreshWindow != null && !this.iapSessionRefreshWindow.closed) {
+      fetch(this.origin + '/favicon.ico', { mode: 'no-cors' }).then(function(response) {
+        if (response.status !== 200) {
+          window.setTimeout(this.checkSessionRefresh, 500);
+        } else {
+          this.iapSessionRefreshWindow.close();
+          this.iapSessionRefreshWindow = null;
+        }
+      }.bind(this));
+    } else {
+      this.iapSessionRefreshWindow = null;
+    }
+  }
+
+  render() {
+    const { dataset } = this.props
+
+    return buttonPrimary({
+      as: 'a',
+      onClick: () => {
+        if (this.iapSessionRefreshWindow == null) {
+          this.iapSessionRefreshWindow = window.open(this.origin + '/_gcp_iap/do_session_refresh', 'Login', 'width=448,height=500');
+          window.setTimeout(this.checkSessionRefresh.bind(this), 500);
+        }
+        return false;
+      }
+    }, ['Browse Data'])
+  }
+}
+
 const thousandGenomes = () => h(Participant, {
   logo: { src: thousandGenomesLogo, alt: '1000 Genomes logo' },
   title: '1000 Genomes',
@@ -157,12 +198,7 @@ const amppd = () => h(Participant, {
     ])
   ]),
   sizeText: 'Participants: > 4,700'
-}, [
-  buttonPrimary({
-    as: 'a',
-    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'AMP PD - 2019_v1beta_0220' })
-  }, ['Browse Data'])
-])
+}, [ h(PrivateDataExplorerButton, { dataset: 'AMP PD - 2019_v1beta_0220' })])
 
 const baseline = () => h(Participant, {
   logo: { src: baselineLogo, alt: `Project Baseline logo`, height: '55%' },
@@ -175,12 +211,7 @@ const baseline = () => h(Participant, {
     designed to develop a well-defined reference, or “baseline,” of health.`
   ]),
   sizeText: 'Participants: > 1,500'
-}, [
-  buttonPrimary({
-    as: 'a',
-    href: Nav.getLink('library-datasets-data-explorer', { dataset: 'Baseline Health Study' })
-  }, ['Browse Data'])
-])
+}, [ h(PrivateDataExplorerButton, { dataset: 'Baseline Health Study' })])
 
 const encode = () => h(Participant, {
   logo: { src: encodeLogo, alt: `ENCODE Project logo` },
