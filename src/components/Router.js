@@ -34,6 +34,7 @@ import * as NotebookLauncher from 'src/pages/workspaces/workspace/notebooks/Note
 import * as TerminalLauncher from 'src/pages/workspaces/workspace/notebooks/TerminalLauncher'
 import * as Tools from 'src/pages/workspaces/workspace/Tools'
 import * as WorkflowView from 'src/pages/workspaces/workspace/tools/WorkflowView'
+import * as Workspace from 'src/pages/workspaces/Workspace'
 
 
 const pageWrapStyle = { display: 'flex', flexDirection: 'column', flex: '1 0 auto', position: 'relative' }
@@ -64,7 +65,8 @@ const initNavPaths = () => {
     DataExplorer.navPaths,
     Datasets.navPaths,
     Showcase.navPaths,
-    Projects.navPaths
+    Projects.navPaths,
+    Workspace.navPaths
   ]))
 }
 

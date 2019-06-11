@@ -352,10 +352,10 @@ export const WorkspaceDashboard = _.flow(
 })
 
 export const navPaths = [
-  {
-    name: 'workspace-dashboard',
-    path: '/workspaces/:namespace/:name',
-    component: WorkspaceDashboard,
-    title: ({ name }) => `${name} - Dashboard`
-  }
+  // {
+  //   name: 'workspace-dashboard',
+  //   path: '/workspaces/:namespace/:name',
+  //   component: WorkspaceDashboard,
+  //   title: ({ name }) => `${name} - Dashboard`
+  // }
 ]
