@@ -1,13 +1,19 @@
 import _ from 'lodash/fp'
 // import * as Utils from 'src/libs/utils'
 import { WorkspaceDashboard } from 'src/pages/workspaces/workspace/Dashboard'
+import { WorkspaceData } from 'src/pages/workspaces/workspace/Data'
 import { h } from 'react-hyperscript-helpers'
+import { Notebooks } from 'src/pages/workspaces/workspace/Notebooks'
 
 
 export const Workspace = ({ tab, ...rawProps }) => {
   const { namespace, name } = rawProps
   const props = { key: `${namespace}/${name}`, ...rawProps }
   switch (tab) {
+    case 'data':
+      return h(WorkspaceData, props)
+    case 'notebooks':
+      return h(Notebooks, props)
     default:
       return h(WorkspaceDashboard, props)
   }
@@ -15,34 +21,36 @@ export const Workspace = ({ tab, ...rawProps }) => {
 
 export const navPaths = [
   {
-    name: 'workspace-dashboard',
+    name: 'workspace',
     path: '/workspaces/:namespace/:name/:tab?',
     component: Workspace,
+    title: ({ name, tab }) => `${name} - ${_.startCase(tab || 'notebooks')}`
+  },
+
+  // These will never be returned from findHandler. These are only here temporarily to keep getLink and goToPath from breaking.
+  {
+    name: 'workspace-dashboard',
+    path: '/workspaces/:namespace/:name',
+    component: Workspace,
     title: ({ name, tab }) => `${name} - ${_.startCase(tab || 'dashboard')}`
-  }
-  // , {
-  //   name: 'workspace',
-  //   path: '/workspaces/:namespace/:name/:tab?',
-  //   component: Workspace,
-  //   title: ({ name, tab }) => `${name} - ${_.startCase(tab || 'notebooks')}`
-  // }
-//   {
-//     name: 'workspace-notebooks',
-//     path: '/workspaces/:namespace/:name/notebooks',
-//     component: Notebooks,
-//     title: ({ name }) => `${name} - Notebooks`
-//   },
+  },
+  {
+    name: 'workspace-data',
+    path: '/workspaces/:namespace/:name/data',
+    component: WorkspaceData,
+    title: ({ name }) => `${name} - Data`
+  },
+  {
+    name: 'workspace-notebooks',
+    path: '/workspaces/:namespace/:name/notebooks',
+    component: Notebooks,
+    title: ({ name }) => `${name} - Notebooks`
+  },
 //   {
 //     name: 'workspace-job-history',
 //     path: '/workspaces/:namespace/:name/job_history',
 //     component: JobHistory,
 //     title: ({ name }) => `${name} - Job History`
-//   },
-//   {
-//     name: 'workspace-data',
-//     path: '/workspaces/:namespace/:name/data',
-//     component: WorkspaceData,
-//     title: ({ name }) => `${name} - Data`
 //   },
 //   {
 //     name: 'workspace-dashboard',

@@ -109,9 +109,10 @@ export default _.flow(
               notebookName: newName + '.ipynb'
             })
           } else {
-            Nav.goToPath('workspace-notebooks', {
+            Nav.goToPath('workspace', {
               namespace: selectedWorkspace.namespace,
-              name: selectedWorkspace.name
+              name: selectedWorkspace.name,
+              tab: 'notebooks'
             })
           }
         }

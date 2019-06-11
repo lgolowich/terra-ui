@@ -180,7 +180,7 @@ class NotebookCard extends Component {
   }
 }
 
-const Notebooks = _.flow(
+export const Notebooks = _.flow(
   requesterPaysWrapper({
     onDismiss: () => Nav.history.goBack()
   }),

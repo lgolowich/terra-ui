@@ -685,7 +685,7 @@ const BucketContent = _.flow(
   }
 })
 
-const WorkspaceData = _.flow(
+export const WorkspaceData = _.flow(
   wrapWorkspace({
     breadcrumbs: props => breadcrumbs.commonPaths.workspaceDashboard(props),
     title: 'Data', activeTab: 'data'

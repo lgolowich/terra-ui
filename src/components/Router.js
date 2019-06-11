@@ -49,9 +49,7 @@ const initNavPaths = () => {
     ImportData.navPaths,
     ImportTool.navPaths,
     PrivacyPolicy.navPaths,
-    Dashboard.navPaths,
-    Data.navPaths,
-    Notebooks.navPaths,
+    Workspace.navPaths,
     JobHistory.navPaths,
     SubmissionDetails.navPaths,
     Tools.navPaths,
@@ -65,8 +63,7 @@ const initNavPaths = () => {
     DataExplorer.navPaths,
     Datasets.navPaths,
     Showcase.navPaths,
-    Projects.navPaths,
-    Workspace.navPaths
+    Projects.navPaths
   ]))
 }
 

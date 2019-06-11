@@ -168,7 +168,7 @@ const WorkspaceCard = pure(({
     const style = listView ? styles.longCard : styles.shortCard
     if (canView) {
       return a({
-        href: Nav.getLink('workspace-dashboard', { namespace, name }),
+        href: Nav.getLink('workspace', { namespace, name }),
         style
       }, children)
     } else {
