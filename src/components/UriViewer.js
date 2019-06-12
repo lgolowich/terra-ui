@@ -75,6 +75,7 @@ const UriViewer = props => {
   const { googleProject, uri, onDismiss } = props
   const isGsUri = isGs(uri)
   const [bucket, name] = isGsUri ? parseUri(uri) : []
+  console.log(bucket)
 
   const pingObject = withErrorReporting('Error fetching file metadata', async () => {
     if (isGsUri) {

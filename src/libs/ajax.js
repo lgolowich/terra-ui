@@ -691,6 +691,7 @@ const Workspaces = signal => ({
 
 const Buckets = signal => ({
   getObject: async (bucket, object, namespace) => {
+    console.log(object)
     return fetchBuckets(`storage/v1/b/${bucket}/o/${encodeURIComponent(object)}`,
       _.merge(authOpts(await User(signal).token(namespace)), { signal })
     ).then(
@@ -770,6 +771,24 @@ const Buckets = signal => ({
       )
       return await res.json()
     }
+
+    const lock = async (lastLockedBy, lockExpiration, generation, metageneration) => {
+      const queryParams = {
+        'ifGenerationMatch': generation,
+        'ifMetagenerationMatch': metageneration
+      }
+      const res = await fetchBuckets(
+        `${bucketUrl}/${nbName(name)}?${qs.stringify(queryParams)}`,
+        _.mergeAll([authOpts(await User(signal).token(namespace)), jsonBody({
+          metadata: {
+            "x-goog-meta-lastLockedBy": lastLockedBy,
+            "x-goog-meta-lockExpiration": lockExpiration
+          }
+        }), { signal, method: 'PATCH' }])
+      )
+      return await res.json()
+    }
+
     return {
       preview: async () => {
         const nb = await fetchBuckets(
@@ -800,7 +819,9 @@ const Buckets = signal => ({
       rename: async newName => {
         await copy(newName, bucket)
         return doDelete()
-      }
+      },
+
+      lock
     }
   }
 })
@@ -936,9 +957,29 @@ const Jupyter = signal => ({
           _.mergeAll([authOpts(), jsonBody(files), { signal, method: 'POST' }]))
       },
 
+      // localize: entries => {
+      //   return fetchLeo(`${root}/localize`,
+      //     _.mergeAll([authOpts(), jsonBody(entries), { signal, method: 'POST' }]))
+      // },
+
       setCookie: () => {
         return fetchLeo(`${root}/setCookie`,
           _.merge(authOpts(), { signal, credentials: 'include' }))
+      },
+
+      storageLinks: (localBaseDirectory, localSafeModeBaseDirectory, cloudStorageDirectory, pattern) => {
+        return fetchLeo(`${root}/storageLinks`,
+          _.mergeAll([authOpts(), jsonBody({
+            localBaseDirectory,
+            localSafeModeBaseDirectory,
+            cloudStorageDirectory,
+            pattern
+          }), { signal, method: 'POST' }]))
+      },
+
+      lock: notebookPath => {
+        return fetchLeo(`${root}/lock`,
+          _.mergeAll([authOpts(), jsonBody(notebookPath), { signal, method: 'POST' }]))
       }
     }
   }

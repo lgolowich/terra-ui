@@ -4,7 +4,7 @@ import {
 import {
   faArrowRight, faBan, faCaretDown, faCheck, faCheckCircle, faCheckSquare, faCloud, faCog, faCreditCard, faDownload, faExclamationCircle,
   faExclamationTriangle, faFileInvoiceDollar, faGripHorizontal, faInfoCircle, faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPause, faPen,
-  faPlay, faPlus, faPlusCircle, faQuestionCircle, faSearch, faShareAlt, faSquare as faSquareSolid, faTerminal, faTrashAlt
+  faPlay, faPlus, faPlusCircle, faQuestionCircle, faSearch, faShareAlt, faSquare as faSquareSolid, faTerminal, faTrashAlt, faEllipsisV
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import _ from 'lodash/fp'
@@ -76,6 +76,7 @@ const iconDict = {
   'view-cards': fa(faGripHorizontal),
   'view-list': custom(list),
   'warning-standard': fa(faExclamationTriangle),
+  'ellipsis-v': fa(faEllipsisV),
   arrowRight: fa(faArrowRight),
   cardMenuIcon: custom(cardMenuIcon),
   caretDown: fa(faCaretDown),
