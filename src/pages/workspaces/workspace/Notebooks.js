@@ -1,7 +1,7 @@
 import * as clipboard from 'clipboard-polyfill'
 import _ from 'lodash/fp'
 import * as qs from 'qs'
-import { createRef, Fragment } from 'react'
+import { createRef, Fragment, useState } from 'react'
 import Dropzone from 'react-dropzone'
 import { a, div, h } from 'react-hyperscript-helpers'
 import * as breadcrumbs from 'src/components/breadcrumbs'
@@ -12,9 +12,9 @@ import { NotebookCreator, NotebookDeleter, NotebookDuplicator } from 'src/compon
 import { notify } from 'src/components/Notifications'
 import PopupTrigger from 'src/components/PopupTrigger'
 import TooltipTrigger from 'src/components/TooltipTrigger'
-import { ajaxCaller } from 'src/libs/ajax'
+import { Ajax, ajaxCaller, useCancellation } from 'src/libs/ajax'
 import colors from 'src/libs/colors'
-import { reportError } from 'src/libs/error'
+import { reportError, withErrorReporting } from 'src/libs/error'
 import * as Nav from 'src/libs/nav'
 import * as StateHistory from 'src/libs/state-history'
 import * as Style from 'src/libs/style'
@@ -57,12 +57,27 @@ const sortOptions = [
 
 class NotebookCard extends Component {
   render() {
-    const { namespace, name, updated, listView, wsName, onRename, onCopy, onDelete, onExport, canWrite } = this.props
+    const { namespace, name, updated, listView, wsName, onRename, onCopy, onDelete, onExport, canWrite, bucketName } = this.props
+    const [locked, setLocked] = useState(false)
+    const signal = useCancellation()
     const tenMinutesAgo = _.tap(d => d.setMinutes(d.getMinutes() - 10), new Date())
     const isRecent = new Date(updated) > tenMinutesAgo
     const notebookLink = Nav.getLink('workspace-notebook-launch', { namespace, name: wsName, notebookName: name.slice(10) })
-    const readOnlyParam = { 'read-only': 'true' }
-    const notebookReadOnlyLink = `${notebookLink}/?${qs.stringify(readOnlyParam)}`
+    const notebookEditLink = `${notebookLink}/?${qs.stringify({ 'edit': 'true' })}`
+    const notebookPlaygroundLink = `${notebookLink}/?${qs.stringify({ 'playground': 'true' })}`
+    const checkIfLocked = _.flow(
+      withErrorReporting('Error checking notebook lock status')
+    )(async () => {
+      const notebook = await Ajax(signal).Buckets.notebook(namespace, bucketName, name.slice(0, -6)).getObject()
+      const lastLockedBy = notebook.metadata['lastLockedBy']
+      const lockExpiration = notebook.metadata['lockExpiration']
+      const lockExpirationDate = new Date(lockExpiration)
+
+      if (lastLockedBy && lastLockedBy !== cluster.creator && lockExpirationDate > Date.now()) {
+        setLocked(true)
+        setLockedBy(lastLockedBy)
+      }
+    })
 
     const notebookMenu = h(PopupTrigger, {
       side: 'right',
@@ -71,16 +86,23 @@ class NotebookCard extends Component {
         h(MenuButton, {
           as: 'a',
           href: notebookLink,
+          tooltip: canWrite && 'Open without runtime',
+          tooltipSide: 'left'
+        }, [menuIcon('eye'), 'Open preview']),
+        h(MenuButton, {
+          as: 'a',
+          href: notebookEditLink,
           disabled: !canWrite,
           tooltip: !canWrite && noWrite,
           tooltipSide: 'left'
-        }, [menuIcon('edit'), 'Open']),
+        }, [menuIcon('edit'), 'Edit']),
         h(MenuButton, {
           as: 'a',
-          href: notebookReadOnlyLink,
-          tooltip: canWrite && 'Open without runtime',
+          href: notebookPlaygroundLink,
+          disabled: !canWrite,
+          tooltip: !canWrite && noWrite,
           tooltipSide: 'left'
-        }, [menuIcon('eye'), 'Open read-only']),
+        }, [menuIcon('export'), 'Open in playground mode']),
         h(MenuButton, {
           onClick: () => onExport()
         }, [menuIcon('export'), 'Copy to another workspace']),
@@ -147,6 +169,7 @@ class NotebookCard extends Component {
     }, listView ? [
       notebookMenu,
       title,
+      'LOCKED',
       div({ style: { flexGrow: 1 } }),
       isRecent ? div({ style: { display: 'flex', color: colors.warning(), marginRight: '2rem' } }, 'Recently Edited') : undefined,
       h(TooltipTrigger, { content: Utils.makeCompleteDate(updated) }, [
@@ -155,6 +178,7 @@ class NotebookCard extends Component {
       ])
     ] : [
       title,
+      'LOCKED',
       div({
         style: {
           display: 'flex',

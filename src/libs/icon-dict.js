@@ -3,7 +3,7 @@ import {
 } from '@fortawesome/free-regular-svg-icons'
 import {
   faArrowRight, faBan, faCaretDown, faCheck, faCheckCircle, faCheckSquare, faCloud, faCog, faCreditCard, faDownload, faExclamationCircle,
-  faExclamationTriangle, faFileInvoiceDollar, faGripHorizontal, faInfoCircle, faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPause, faPen,
+  faExclamationTriangle, faFileInvoiceDollar, faGripHorizontal, faInfoCircle, faLock, faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPause, faPen,
   faPlay, faPlus, faPlusCircle, faQuestionCircle, faSearch, faShareAlt, faSquare as faSquareSolid, faTerminal, faTrashAlt, faEllipsisV
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -56,6 +56,7 @@ const iconDict = {
   'help': fa(faQuestionCircle),
   'info-circle': fa(faInfoCircle),
   'library': custom(books),
+  'lock': fa(faLock),
   'long-arrow-alt-down': fa(faLongArrowAltDown),
   'long-arrow-alt-up': fa(faLongArrowAltUp),
   'minus-circle': fa(faMinusCircle),
