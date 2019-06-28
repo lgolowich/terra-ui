@@ -1,5 +1,5 @@
 module.exports = {
-  'plugins': ['lodash-fp', 'react', 'react-hooks'],
+  'plugins': ['lodash-fp', 'react', 'react-hooks', 'simple-import-sort', 'import'],
   'extends': 'react-app',
   'globals': {
     'SATURN_VERSION': false,
@@ -16,6 +16,10 @@ module.exports = {
     }
   },
   'rules': {
+    // Best Practices
+    'no-multi-spaces': 'warn',
+
+    // Stylistic Issues
     'array-bracket-newline': ['warn', 'consistent'],
     'array-bracket-spacing': 'warn',
     'block-spacing': 'warn',
@@ -49,7 +53,7 @@ module.exports = {
     'space-before-function-paren': ['warn', { 'anonymous': 'never', 'named': 'never', 'asyncArrow': 'always' }],
     'space-in-parens': 'warn',
 
-
+    // ES6
     'arrow-parens': ['warn', 'as-needed'],
     'arrow-spacing': 'warn',
     'no-duplicate-imports': 'warn',
@@ -87,6 +91,11 @@ module.exports = {
     'react/no-unused-state': 'warn',
 
     'react-hooks/rules-of-hooks': 'warn',
-    'react-hooks/exhaustive-deps': 'warn'
+    'react-hooks/exhaustive-deps': 'warn',
+
+    'simple-import-sort/sort': 'warn',
+
+    'import/newline-after-import': ['warn', { 'count': 2 }],
+    'import/no-anonymous-default-export': ['warn', { 'allowObject': true }]
   }
 }

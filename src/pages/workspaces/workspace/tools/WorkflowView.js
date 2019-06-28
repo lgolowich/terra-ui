@@ -17,7 +17,7 @@ import StepButtons, { params as StepButtonParams } from 'src/components/StepButt
 import { FlexTable, HeaderCell, SimpleTable, TextCell } from 'src/components/table'
 import TooltipTrigger from 'src/components/TooltipTrigger'
 import WDLViewer from 'src/components/WDLViewer'
-import { ajaxCaller } from 'src/libs/ajax'
+import { Ajax, ajaxCaller } from 'src/libs/ajax'
 import colors from 'src/libs/colors'
 import { reportError, withErrorReporting } from 'src/libs/error'
 import * as Nav from 'src/libs/nav'
@@ -300,7 +300,7 @@ const WorkflowView = _.flow(
     return {
       type: _.endsWith('_set', value) ? EntitySelectionType.chooseSet : EntitySelectionType.processAll,
       selectedEntities: {},
-      newSetName: `${this.props.workflowName}_${new Date().toISOString().slice(0, -5).replace(/:/g, '-')}`
+      newSetName: `${this.props.workflowName}_${new Date().toISOString().slice(0, -5)}`.replace(/[^\w]/g, '-') // colons in date, periods in wf name
     }
   }
 
@@ -393,10 +393,6 @@ const WorkflowView = _.flow(
     ])
   }
 
-  sortOptionalInputs(inputsOutputs) {
-    return _.update('inputs', _.sortBy('optional'), inputsOutputs)
-  }
-
   async getValidation() {
     const { namespace, name, workflowNamespace, workflowName, ajax: { Workspaces } } = this.props
 
@@ -435,8 +431,8 @@ const WorkflowView = _.flow(
         savedConfig: config, modifiedConfig: config,
         currentSnapRedacted: isRedacted, savedSnapRedacted: isRedacted,
         entityMetadata,
-        savedInputsOutputs: this.sortOptionalInputs(inputsOutputs),
-        modifiedInputsOutputs: this.sortOptionalInputs(inputsOutputs),
+        savedInputsOutputs: inputsOutputs,
+        modifiedInputsOutputs: inputsOutputs,
         snapshotIds,
         errors: isRedacted ? { inputs: {}, outputs: {} } : augmentErrors(validationResponse),
         entitySelectionModel: this.resetSelectionModel(config.rootEntityType),
@@ -510,7 +506,7 @@ const WorkflowView = _.flow(
     const config = await Methods.template({ methodNamespace, methodName, methodVersion: newSnapshotId })
     const modifiedInputsOutputs = await Methods.configInputsOutputs(config)
     this.setState(
-      { modifiedInputsOutputs: this.sortOptionalInputs(modifiedInputsOutputs), savedSnapRedacted: currentSnapRedacted, currentSnapRedacted: false })
+      { modifiedInputsOutputs, savedSnapRedacted: currentSnapRedacted, currentSnapRedacted: false })
     this.setState(_.update('modifiedConfig', _.flow(
       _.set('methodRepoMethod', config.methodRepoMethod),
       _.update('inputs', _.pick(_.map('name', modifiedInputsOutputs.inputs))),
@@ -760,9 +756,13 @@ const WorkflowView = _.flow(
       ...(modifiedConfig.rootEntityType ? _.map(name => `this.${name}`, [`${modifiedConfig.rootEntityType}_id`, ...attributeNames]) : []),
       ..._.map(name => `workspace.${name}`, workspaceAttributes)
     ]
-    const filteredData = currentSnapRedacted ?
-      _.map(k => ({ name: k, inputType: 'unknown', optional: false }), _.keys(modifiedConfig[key])) :
-      _.filter(includeOptionalInputs || key === 'outputs' ? (() => true) : { optional: false }, modifiedInputsOutputs[key])
+    const data = currentSnapRedacted ?
+      _.map(k => ({ name: k, inputType: 'unknown' }), _.keys(modifiedConfig[key])) :
+      modifiedInputsOutputs[key]
+    const filteredData = _.flow(
+      key === 'inputs' && !includeOptionalInputs ? _.reject('optional') : _.identity,
+      _.sortBy(['optional', ({ name }) => name.toLowerCase()])
+    )(data)
 
     return h(Dropzone, {
       accept: '.json',
@@ -799,7 +799,7 @@ const WorkflowView = _.flow(
           onChange: (name, v) => this.setState(_.set(['modifiedConfig', key, name], v)),
           onSetDefaults: () => {
             this.setState(_.set(['modifiedConfig', 'outputs'], _.fromPairs(_.map(({ name }) => {
-              return [name, modifiedConfig.outputs[name] || `this.${_.last(name.split('.'))}`]
+              return [name, `this.${_.last(name.split('.'))}`]
             }, modifiedInputsOutputs.outputs))))
           },
           suggestions
@@ -809,13 +809,13 @@ const WorkflowView = _.flow(
   }
 
   async save() {
-    const { namespace, name, workflowNamespace, workflowName, ajax: { Workspaces } } = this.props
+    const { namespace, name, workflowNamespace, workflowName } = this.props
     const { modifiedConfig, modifiedInputsOutputs } = this.state
 
     this.setState({ saving: true })
 
     try {
-      const validationResponse = await Workspaces.workspace(namespace, name)
+      const validationResponse = await Ajax().Workspaces.workspace(namespace, name)
         .methodConfig(workflowNamespace, workflowName)
         .save(modifiedConfig)
 

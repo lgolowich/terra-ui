@@ -1,6 +1,5 @@
 import * as clipboard from 'clipboard-polyfill'
 import debouncePromise from 'debounce-promise'
-import 'easymde/dist/easymde.min.css'
 import _ from 'lodash/fp'
 import { Fragment } from 'react'
 import { div, h, span } from 'react-hyperscript-helpers'
@@ -13,7 +12,7 @@ import { InfoBox } from 'src/components/PopupTrigger'
 import { SimpleTable } from 'src/components/table'
 import TooltipTrigger from 'src/components/TooltipTrigger'
 import { displayConsentCodes, displayLibraryAttributes } from 'src/data/workspace-attributes'
-import { ajaxCaller } from 'src/libs/ajax'
+import { Ajax, ajaxCaller } from 'src/libs/ajax'
 import { bucketBrowserUrl } from 'src/libs/auth'
 import colors from 'src/libs/colors'
 import { reportError, withErrorReporting } from 'src/libs/error'
@@ -177,24 +176,24 @@ export const WorkspaceDashboard = _.flow(
     withErrorReporting('Error adding tag'),
     Utils.withBusyState(v => this.setState({ busy: v }))
   )(async tag => {
-    const { ajax: { Workspaces }, namespace, name } = this.props
-    this.setState({ tagsList: await Workspaces.workspace(namespace, name).addTag(tag) })
+    const { namespace, name } = this.props
+    this.setState({ tagsList: await Ajax().Workspaces.workspace(namespace, name).addTag(tag) })
   })
 
   deleteTag = _.flow(
     withErrorReporting('Error removing tag'),
     Utils.withBusyState(v => this.setState({ busy: v }))
   )(async tag => {
-    const { ajax: { Workspaces }, namespace, name } = this.props
-    this.setState({ tagsList: await Workspaces.workspace(namespace, name).deleteTag(tag) })
+    const { namespace, name } = this.props
+    this.setState({ tagsList: await Ajax().Workspaces.workspace(namespace, name).deleteTag(tag) })
   })
 
   async save() {
-    const { refreshWorkspace, workspace: { workspace: { namespace, name } }, ajax: { Workspaces } } = this.props
+    const { refreshWorkspace, workspace: { workspace: { namespace, name } } } = this.props
     const { editDescription: description } = this.state
     try {
       this.setState({ saving: true })
-      await Workspaces.workspace(namespace, name).shallowMergeNewAttributes({ description })
+      await Ajax().Workspaces.workspace(namespace, name).shallowMergeNewAttributes({ description })
       await refreshWorkspace()
     } catch (error) {
       reportError('Error saving workspace', error)
@@ -208,6 +207,7 @@ export const WorkspaceDashboard = _.flow(
       workspace, workspace: {
         accessLevel,
         hasBucketAccess,
+        owners,
         workspace: {
           authorizationDomain, createdDate, lastModified, bucketName,
           attributes, attributes: { description = '' }
@@ -282,6 +282,12 @@ export const WorkspaceDashboard = _.flow(
             storageCostEstimate
           ])
         ]),
+        div({ style: styles.header }, ['Owners']),
+        _.map(email => {
+          return div({ key: email, style: { overflow: 'hidden', textOverflow: 'ellipsis' } }, [
+            link({ href: `mailto:${email}` }, [email])
+          ])
+        }, owners),
         div({ style: styles.header }, [
           'Tags',
           h(InfoBox, { style: { marginLeft: '0.25rem' } }, [
@@ -289,7 +295,7 @@ export const WorkspaceDashboard = _.flow(
           social security number, or medical record number.`
           ])
         ]),
-        div({ style: { marginBottom: '0.5rem' } }, [
+        Utils.canWrite(accessLevel) && div({ style: { marginBottom: '0.5rem' } }, [
           h(AsyncCreatableSelect, {
             value: null,
             noOptionsMessage: () => 'Enter at least 3 characters to search',
@@ -303,8 +309,9 @@ export const WorkspaceDashboard = _.flow(
           _.map(tag => {
             return span({ key: tag, style: styles.tag }, [
               tag,
-              linkButton({
+              Utils.canWrite(accessLevel) && linkButton({
                 tooltip: 'Remove tag',
+                disabled: busy,
                 onClick: () => this.deleteTag(tag),
                 style: { marginLeft: '0.25rem', verticalAlign: 'middle', display: 'inline-block' }
               }, [icon('times', { size: 14 })])

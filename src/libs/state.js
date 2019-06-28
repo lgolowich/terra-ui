@@ -1,5 +1,6 @@
 import * as Utils from 'src/libs/utils'
 
+
 export const authStore = Utils.atom({
   isSignedIn: undefined,
   registrationStatus: undefined,
@@ -25,6 +26,8 @@ export const rerunFailuresStatus = Utils.atom()
 export const errorNotifiedClusters = Utils.atom([])
 
 export const requesterPaysBuckets = Utils.atom([])
+
+export const requesterPaysProjectStore = Utils.atom()
 
 /*
  * Modifies ajax responses for testing purposes.
