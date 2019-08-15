@@ -401,13 +401,13 @@ const ToolDrawer = ({ openDrawer, onDismiss, onIgvSuccess, workspaceId, selected
             ),
             h(ModalToolButton,
               {
-                onClick: () => window.open(dataExplorerUrl + '&wid=' + workspaceId) /* TODO */,
+                onClick: () => window.open(dataExplorerUrl + '&wid=' + workspaceId),
                 tooltip: dataExplorerUrl ? 'Open with Data Explorer' : 'Open with Data Explorer (select exactly 1 cohort)',
                 style: { marginTop: '0.5rem' },
                 disabled: !dataExplorerUrl
               }, [
                 div({ style: { display: 'flex', alignItems: 'center', width: 45, marginRight: '1rem' } }, [
-                  img({ src: '#' /* TODO */, style: { width: 40 } })
+                  icon('search', { style: { width: 40 } })
                 ]),
                 'Data Explorer'
               ]
