@@ -14,6 +14,8 @@ const DataExplorerFrame = ({ dataset }) => {
     ref: elem,
     style: { border: 'none' },
     title: `${dataset} - Data Explorer`,
+    display: 'block',
+    width: '100%',
     onLoad: () => {
       iframeResizer({
         onMessage: ({ message: { importDataQueryStr, deQueryStr } }) => {
