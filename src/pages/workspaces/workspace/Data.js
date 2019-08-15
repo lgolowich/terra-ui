@@ -350,10 +350,14 @@ const ReferenceDataContent = ({ workspace: { workspace: { namespace, attributes 
   ])
 }
 
-const ToolDrawer = ({ openDrawer, onDismiss, onIgvSuccess, selectedEntities }) => {
+const ToolDrawer = ({ openDrawer, onDismiss, onIgvSuccess, workspaceId, selectedEntities }) => {
   const [toolMode, setToolMode] = useState()
   const entitiesCount = _.keys(selectedEntities).length
   const entitiesType = !!entitiesCount && selectedEntities[_.keys(selectedEntities)[0]].entityType
+  const dataExplorerUrl =
+    _.size(selectedEntities) === 1 && _.values(selectedEntities)[0].attributes.data_explorer_url ?
+      _.values(selectedEntities)[0].attributes.data_explorer_url :
+      ''
 
   useEffect(() => {
     if (!openDrawer) {
@@ -393,6 +397,19 @@ const ToolDrawer = ({ openDrawer, onDismiss, onIgvSuccess, selectedEntities }) =
                   img({ src: igvLogo, style: { width: 40 } })
                 ]),
                 'IGV'
+              ]
+            ),
+            h(ModalToolButton,
+              {
+                onClick: () => window.open(dataExplorerUrl + '&wid=' + workspaceId) /* TODO */,
+                tooltip: dataExplorerUrl ? 'Open with Data Explorer' : 'Open with Data Explorer (select exactly 1 cohort)',
+                style: { marginTop: '0.5rem' },
+                disabled: !dataExplorerUrl
+              }, [
+                div({ style: { display: 'flex', alignItems: 'center', width: 45, marginRight: '1rem' } }, [
+                  img({ src: '#' /* TODO */, style: { width: 40 } })
+                ]),
+                'Data Explorer'
               ]
             ),
             h(ModalToolButton,
@@ -595,9 +612,7 @@ class EntitiesContent extends Component {
         },
         childrenBefore: ({ entities, columnSettings }) => div({
           style: { display: 'flex', alignItems: 'center', flex: 'none' }
-        }, entityKey === 'cohort' && entityMetadata.cohort.attributeNames.includes('data_explorer_url') ? [
-          this.renderOpenInDataExplorerButton()
-        ] : [
+        }, [
           this.renderDownloadButton(columnSettings),
           !_.endsWith('_set', entityKey) && this.renderCopyButton(entities, columnSettings),
           this.renderToolButton()
@@ -632,6 +647,7 @@ class EntitiesContent extends Component {
         openDrawer: showToolSelector,
         onDismiss: () => this.setState({ showToolSelector: false }),
         onIgvSuccess: newIgvData => this.setState({ showToolSelector: false, igvData: newIgvData }),
+        workspaceId: { namespace, name },
         selectedEntities
       })
     ])
