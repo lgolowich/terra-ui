@@ -13,6 +13,7 @@ const DataExplorerFrame = ({ dataset }) => {
     src: `${origin}/?embed&${Nav.history.location.search.slice(1)}`,
     ref: elem,
     style: { border: 'none' },
+    title: `${dataset} - Data Explorer`,
     onLoad: () => {
       iframeResizer({
         onMessage: ({ message: { importDataQueryStr, deQueryStr } }) => {
